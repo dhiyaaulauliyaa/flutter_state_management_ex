@@ -10,55 +10,65 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+enum CounterEvent {
+  Increment,
+  Decrement,
+}
 
-  final String title;
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  TextStyle style = TextStyle(fontSize: 24);
 
-  void _incrementCounter() {
+  int _count = 0;
+
+  void _counter(CounterEvent event) {
     setState(() {
-      _counter++;
+      _count += event == CounterEvent.Increment ? 1 : -1;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      appBar: AppBar(title: Text('Stateful Counter')),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () => _counter(CounterEvent.Increment),
+            child: Text(
+              '+',
+              style: style,
+            ),
+          ),
+          SizedBox(width: 12),
+          FloatingActionButton(
+            onPressed: () => _counter(CounterEvent.Decrement),
+            child: Text(
+              '-',
+              style: style,
+            ),
+          )
+        ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        child: Text(
+          '$_count',
+          style: style,
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
