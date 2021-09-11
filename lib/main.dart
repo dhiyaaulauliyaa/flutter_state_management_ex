@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_state_management_ex/counter_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,10 +18,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum CounterEvent {
-  Increment,
-  Decrement,
-}
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -32,23 +30,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontSize: 24);
 
-  int _count = 0;
-
-  void _counter(CounterEvent event) {
-    setState(() {
-      _count += event == CounterEvent.Increment ? 1 : -1;
-    });
-  }
+  CounterBloc bloc = CounterBloc();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Stateful Counter')),
+      appBar: AppBar(title: Text('Stream Counter')),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () => _counter(CounterEvent.Increment),
+            onPressed: ()=>bloc.eventSink.add(CounterEvent.Increment),
             child: Text(
               '+',
               style: style,
@@ -56,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SizedBox(width: 12),
           FloatingActionButton(
-            onPressed: () => _counter(CounterEvent.Decrement),
+            onPressed: ()=>bloc.eventSink.add(CounterEvent.Decrement),
             child: Text(
               '-',
               style: style,
@@ -65,9 +57,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: Text(
-          '$_count',
-          style: style,
+        child: StreamBuilder<int>(
+          stream: bloc.counterStream,
+          initialData: 0,
+          builder: (context, snapshot) {
+            return Text(
+              '${snapshot.data}',
+              style: style,
+            );
+          }
         ),
       ),
     );
