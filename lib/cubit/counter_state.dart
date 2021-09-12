@@ -1,4 +1,4 @@
-part of 'counter_bloc.dart';
+part of 'counter_cubit.dart';
 
 @immutable
 abstract class CounterState {}

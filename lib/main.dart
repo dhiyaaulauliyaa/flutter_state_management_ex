@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_state_management_ex/bloc/counter_bloc.dart';
+import 'package:flutter_state_management_ex/cubit/counter_cubit.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,8 +15,8 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       /* BLoC Provider: Provides BLoC for its children */
-      home: BlocProvider<CounterBloc>(
-        create: (context) => CounterBloc(),
+      home: BlocProvider<CounterCubit>(
+        create: (context) => CounterCubit(),
         child: MyHomePage(),
       ),
     );
@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    CounterBloc bloc = BlocProvider.of<CounterBloc>(context);
+    CounterCubit cubit = BlocProvider.of<CounterCubit>(context);
 
     return Scaffold(
       appBar: AppBar(title: Text('BLoC Counter')),
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () => bloc.add(Increment()),
+            onPressed: () => cubit.increment(),
             child: Text(
               '+',
               style: MyHomePage.style,
@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SizedBox(width: 12),
           FloatingActionButton(
-            onPressed: () => bloc.add(Decrement()),
+            onPressed: () => cubit.decrement(),
             child: Text(
               '-',
               style: MyHomePage.style,
@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /* BLoC Builder: rebuild every state change */
-            BlocBuilder<CounterBloc, CounterState>(
+            BlocBuilder<CounterCubit, CounterState>(
               builder: (context, state) => Text(
                 'BLoC Builder: ${_stateSwitcher(state)}',
                 style: MyHomePage.style,
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             /* BLoC Listener: execute logic on listener function every state change (doesn't rebuild UI) */
-            BlocListener<CounterBloc, CounterState>(
+            BlocListener<CounterCubit, CounterState>(
               listener: (context, state) {
                 setState(() {
                   _counterWithListener = _stateSwitcher(state);
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
             /* BLoC Consumer: Combination of Listener and Builder */
             BlocConsumer(
-              bloc: BlocProvider.of<CounterBloc>(context),
+              bloc: BlocProvider.of<CounterCubit>(context),
               listener: (context, state) {
                 setState(() {
                   print('BLoC Consumer-Listener: ${_stateSwitcher(state)}');
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
             /* StreamBuilder: Use bloc stream */
             StreamBuilder(
-              stream: bloc.stream,
+              stream: cubit.stream,
               initialData: CounterInitial(0),
               builder: (context, state) => Text(
                 'BLoC Stream: ${_stateSwitcher(state.data)}',
