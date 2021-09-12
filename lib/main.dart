@@ -33,10 +33,17 @@ class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontSize: 24);
 
   int _count = 0;
+  int _interval = 1;
 
   void _counter(CounterEvent event) {
     setState(() {
-      _count += event == CounterEvent.Increment ? 1 : -1;
+      _count += _interval * (event == CounterEvent.Increment ? 1 : -1);
+    });
+  }
+
+  void _changeInterval(String number) {
+    setState(() {
+      _interval = int.parse(number);
     });
   }
 
@@ -44,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Stateful Counter')),
+
+      //---------------- Counter Button ----------------//
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -64,10 +73,31 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Center(
-        child: Text(
-          '$_count',
-          style: style,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /* Counter */
+            Text(
+              'Count: $_count',
+              style: style,
+            ),
+
+            /* Interval */
+            Text(
+              'Interval: $_interval',
+              style: style,
+            ),
+
+            /* Interval Changer */
+            TextFormField(
+              initialValue: _interval.toString(),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Change Counting Interval'),
+              onFieldSubmitted: _changeInterval,
+            ),
+          ],
         ),
       ),
     );
