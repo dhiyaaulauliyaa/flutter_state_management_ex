@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter_state_management_ex/interval_bloc.dart';
+
 enum CounterEvent {
   Increment,
   Decrement,
@@ -17,9 +19,17 @@ class CounterBloc {
   StreamSink<int> get _counterSink => _counterController.sink;
   Stream<int> get counterStream => _counterController.stream;
 
-  CounterBloc() {
+  /* Get Interval */
+  int _interval = 1;
+  late StreamSubscription<int> _intervalStream;
+
+  CounterBloc(IntervalBloc intervalBloc) {
+    _intervalStream = intervalBloc.intervalStream.listen((data) {
+      _interval = data;
+    });
+
     _eventStream.listen((event) {
-      _count += event == CounterEvent.Increment ? 1 : -1;
+      _count += (event == CounterEvent.Increment ? 1 : -1) * _interval;
       _counterSink.add(_count);
     });
   }
@@ -27,5 +37,6 @@ class CounterBloc {
   void dispose() {
     _eventController.close();
     _counterController.close();
+    _intervalStream.cancel();
   }
 }
